@@ -5,7 +5,7 @@ import scala.annotation.tailrec
 
 trait FibonacciByRecursion extends Fibonacci {
 
-  override def fibonacci(n: Int): BigInt = {
+  override def fibonacciNumber(n: Int): BigInt = {
     @tailrec 
     def fib(count: BigInt, previous: BigInt, acc: BigInt): BigInt = count match {
       case i if (i < 0) => throw new IllegalArgumentException(s"Cannot determine Fibonacci number if negative value [$i]") 
@@ -15,4 +15,6 @@ trait FibonacciByRecursion extends Fibonacci {
     fib(n, BigInt(1), BigInt(0))
   }
 
+  // TODO: test 
+  override def fibonacciSequence(n: Int): List[BigInt] = (for (i <- (0 until n)) yield fibonacciNumber(i)).toList
 }
