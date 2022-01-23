@@ -6,7 +6,7 @@ trait FibonacciByList extends Fibonacci {
 
   override def fibonacciNumber(n: Int): BigInt = fibNumbers(n)
   
-  // TODO: test 
+  // TODO: test large lists
   override def fibonacciSequence(n: Int): List[BigInt] = fibNumbers.take(n).toList
     
 }

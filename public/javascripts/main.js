@@ -1,5 +1,13 @@
 var webSocket;
-var messageInput;
+var fibNs;
+
+function head(ns) {
+  return ns[0];
+}
+
+function tail(ns) {
+  return ns.slice(1);
+}
 
 function init() {
   var host = location.origin.replace(/^https/, 'wss').replace(/^http/, 'ws'); 
@@ -29,18 +37,12 @@ function onError(event) {
 function onMessage(event) {
   console.log(event.data);
   let receivedData = JSON.parse(event.data);
-  console.log("New Data: ", receivedData);
-  // get the text from the "body" field of the json we
-  // receive from the server.
-  appendServerMessageToView("Server", receivedData.body);
-}
-
-function appendClientMessageToView(title, message) {
-  $("#message-content").append("<span>" + title + ": " + message + "<br /></span>");
-}
-
-function appendServerMessageToView(title, message) {
-  $("#message-content").append("<span>" + title + ": " + message + "<br /><br /></span>");
+  // console.log("New Data: ", receivedData);
+  fibNs = receivedData.body.numbers;
+  // console.log("FIB SEQ: " + fibNs); 
+  // for (i = 0; i < fibNs.length; i++) {
+  //   console.log("FIB NUMBER: " + fibNs[i]);
+  // }
 }
 
 function consoleLog(message) {
@@ -51,54 +53,20 @@ window.addEventListener("load", init, false);
 
 $("#send-button").click(function (e) {
   console.log("Sending ...");
-  getMessageAndSendToServer();
-  // put focus back in the textarea
-  $("#message-input").focus();
+  getFibSequence();  
 });
 
-// send the message when the user presses the <enter> key while in the textarea
-$(window).on("keydown", function (e) {
-  if (e.which == 13) {
-    getMessageAndSendToServer();
-    return false;
-  }
-});
-
-// there’s a lot going on here:
-// 1. get our message from the textarea.
-// 2. append that message to our view/div.
-// 3. create a json version of the message.
-// 4. send the message to the server.
-function getMessageAndSendToServer() {
-
-  // get the text from the textarea
-  messageInput = $("#message-input").val();
-
-  // clear the textarea
-  $("#message-input").val("");
-
-  // if the trimmed message was blank, return now
-  if ($.trim(messageInput) == "") {
-    return false;
-  }
-
-  // add the message to the view/div
-  appendClientMessageToView("Me", messageInput);
-
+// 1. create a json version of the message.
+// 2. send the message to the server.
+function getFibSequence() {
   // create the message as json
+  var messageInput = "fibonacciSequence=1200;";
+  // var messageInput = "fibonacciSequence=200;";
   let jsonMessage = {
     message: messageInput
   };
-
   // send our json message to the server
   sendToServer(jsonMessage);
-}
-
-
-
-/////////////////////////////
-function fibNumbers() {
-    return [0, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89]
 }
 
 var canvas = document.getElementById("can");
@@ -134,10 +102,11 @@ var drawFibonacciSpiral = function(p1, p2){
     ctx.clearRect(0, 0, width, height);
 
     // Draw coord axis -> center viewport at 0,0
-    drawStroke([{x:0, y:-center.y}, {x:0, y:center.y}], center, "gray");
-    drawStroke([{x:-center.x, y:0}, {x:center.x, y:0}], center,"gray");
+    // drawStroke([{x:0, y:-center.y}, {x:0, y:center.y}], center, "gray");
+    // drawStroke([{x:-center.x, y:0}, {x:center.x, y:0}], center,"gray");
 
     // Draw spiral -> center viewport at 0,0
+    // drawStroke(getSpiral(p1, p2, getDistance({x:0,y:0},center)), center, "Red");
     drawStroke(getSpiral(p1, p2, getDistance({x:0,y:0},center)), center);
 };
 
@@ -173,14 +142,24 @@ var FibonacciGenerator = function(){
 
     thisFibonacci.getDiscrete = function(n){
 
-        // If the Fibonacci number is not in the array, calculate it
-        while (n >= thisFibonacci.array.length){
-            var length = thisFibonacci.array.length;
-            var nextFibonacci = thisFibonacci.array[length - 1] + thisFibonacci.array[length - 2];
-            thisFibonacci.array.push(nextFibonacci);
-        }
+        //// If the Fibonacci number is not in the array, calculate it
+        // while (n >= thisFibonacci.array.length){
+        //     var length = thisFibonacci.array.length;
+        //     var nextFibonacci = thisFibonacci.array[length - 1] + thisFibonacci.array[length - 2];
+        //     thisFibonacci.array.push(nextFibonacci);
+        // }
+        // return thisFibonacci.array[n];
 
-        return thisFibonacci.array[n];
+        if (fibNs == null || fibNs.length == 0) {
+          getFibSequence();
+        }
+        if (n >= fibNs.length) {
+          n = 0;
+        }
+        return fibNs[n];
+        // var next = head(fibNs);
+        // fibNs = tail(fibNs);
+        // return next;
     };
 
     thisFibonacci.getNumber = function(n){
@@ -233,8 +212,15 @@ var getSpiral = function(pA, pB, maxRadius){
             x: scale * radius * Math.cos(angle + angleOffset) + pA.x,
             y: scale * radius * Math.sin(angle + angleOffset) + pA.y
         };
-
         path.push(p);
+        
+        // JMI start 
+        q = {
+            x: (scale+1) * (radius+1) * Math.cos(angle + angleOffset) + pA.x,
+            y: (scale+1) * (radius+1) * Math.sin(angle + angleOffset) + pA.y
+        };
+        path.push(q);
+        // JMI end
 
         i++; // Next point
         step = i / precision; // 1/4 turns at point    
@@ -255,24 +241,5 @@ function sendToServer(jsonMessage) {
   } else {
     consoleLog("Could not send data. Websocket is not open.");
   }
-
-  // var c = document.getElementById("canv");
-  // var ctx = c.getContext("2d");
-  
-  // var grd = ctx.createLinearGradient(0, 0, 200, 0);
-  // grd.addColorStop(0, "red");
-  // grd.addColorStop(1, "white");
-  // // Fill with gradient
-  // ctx.fillStyle = grd;
-  // ctx.fillRect(10, 10, 150, 80);
-
-  // ctx.moveTo(0, 0);
-  // ctx.lineTo(200, 100);
-  // ctx.stroke();
-
-
-  // ctx.beginPath();
-  // ctx.arc(95, 50, 40, 0, 2 * Math.PI);
-  // ctx.stroke();
 
 }

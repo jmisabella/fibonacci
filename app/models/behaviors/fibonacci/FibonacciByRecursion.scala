@@ -15,6 +15,6 @@ trait FibonacciByRecursion extends Fibonacci {
     fib(n, BigInt(1), BigInt(0))
   }
 
-  // TODO: test 
+  // TODO: test large lists
   override def fibonacciSequence(n: Int): List[BigInt] = (for (i <- (0 until n)) yield fibonacciNumber(i)).toList
 }
