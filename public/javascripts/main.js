@@ -69,6 +69,9 @@ function getFibSequence() {
   sendToServer(jsonMessage);
 }
 
+var spiralPhase = 2;
+// var previousSpiralPhase = 1;
+var backgroundPhase = 0;
 var canvas = document.getElementById("can");
 var ctx = canvas.getContext("2d");
 
@@ -81,7 +84,26 @@ var center = {
     y: height / 2
 };
 
-canvas.addEventListener('mousemove', function(){
+canvas.addEventListener('click', function() {
+  spiralPhase = (spiralPhase + 1) % 4;
+  // ctx.clearRect(0, 0, $("#can").width, $("#can").height);
+  backgroundPhase = random(0, 4);
+  $("#can").removeClass("background-0");
+  $("#can").removeClass("background-1");
+  $("#can").removeClass("background-2");
+  $("#can").removeClass("background-3");
+  $("#can").removeClass("background-4");
+  $("#can").addClass("background-" + backgroundPhase);
+  ctx.clearRect(0, 0, width, height);
+  ctx.beginPath();    
+  drawStroke(getSpiral(p1, p2, getDistance({x:0,y:0},center)), center);
+});
+
+function random(min = 0, max = Number.MAX_SAFE_INTEGER) {
+  return Math.floor(Math.random() * (max - min) + min);
+} 
+
+canvas.addEventListener('mousemove', function() {
     var mouse = {};
 
     mouse.x = event.offsetX;
@@ -107,6 +129,7 @@ var drawFibonacciSpiral = function(p1, p2){
 
     // Draw spiral -> center viewport at 0,0
     // drawStroke(getSpiral(p1, p2, getDistance({x:0,y:0},center)), center, "Red");
+    // drawStroke(getSpiral(p1, p2, getDistance({x:0,y:0},center)), center);
     drawStroke(getSpiral(p1, p2, getDistance({x:0,y:0},center)), center);
 };
 
@@ -137,19 +160,7 @@ var drawStroke = function(points, offset, strokeColor){
 var FibonacciGenerator = function(){
     var thisFibonacci = this;
 
-    // Start with 0 1 2... instead of the real sequence 0 1 1 2...
-    thisFibonacci.array = [0, 1, 2];
-
     thisFibonacci.getDiscrete = function(n){
-
-        //// If the Fibonacci number is not in the array, calculate it
-        // while (n >= thisFibonacci.array.length){
-        //     var length = thisFibonacci.array.length;
-        //     var nextFibonacci = thisFibonacci.array[length - 1] + thisFibonacci.array[length - 2];
-        //     thisFibonacci.array.push(nextFibonacci);
-        // }
-        // return thisFibonacci.array[n];
-
         if (fibNs == null || fibNs.length == 0) {
           getFibSequence();
         }
@@ -157,9 +168,6 @@ var FibonacciGenerator = function(){
           n = 0;
         }
         return fibNs[n];
-        // var next = head(fibNs);
-        // fibNs = tail(fibNs);
-        // return next;
     };
 
     thisFibonacci.getNumber = function(n){
@@ -177,7 +185,6 @@ var FibonacciGenerator = function(){
 
         return fibFloor + a * (fibCeil - fibFloor);
     };
-
     return thisFibonacci;
 };
 
@@ -215,10 +222,40 @@ var getSpiral = function(pA, pB, maxRadius){
         path.push(p);
         
         // JMI start 
-        q = {
-            x: (scale+1) * (radius+1) * Math.cos(angle + angleOffset) + pA.x,
-            y: (scale+1) * (radius+1) * Math.sin(angle + angleOffset) + pA.y
-        };
+        var phase = spiralPhase; 
+        q = ''
+        switch(phase.toString()) {
+          case '0':
+            q = {
+                x: (scale+1) * (radius+1) * Math.cos(angle + angleOffset) + pA.x,
+                y: (scale+1) * (radius+1) * Math.sin(angle + angleOffset) + pA.y
+            };
+            break;
+          case '1':
+            q = {
+                x: (scale+1) * (radius-1) * Math.cos(angle + angleOffset) + pA.x,
+                y: (scale-1) * (radius+1) * Math.sin(angle + angleOffset) + pA.y
+            };
+            break;
+          case '2':
+            q = {
+                x: (scale+1) * (radius+1) * Math.cos(angle + angleOffset) + pA.x,
+                y: (scale-1) * (radius-1) * Math.sin(angle + angleOffset) + pA.y
+            };
+            break;
+          case '3':
+            q = {
+                x: (scale-1) * (radius+1) * Math.cos(angle + angleOffset) + pA.x,
+                y: (scale+1) * (radius-1) * Math.sin(angle + angleOffset) + pA.y
+            };
+            break;
+          default:
+            q = {
+                x: (scale+1) * (radius+1) * Math.cos(angle + angleOffset) + pA.x,
+                y: (scale+1) * (radius+1) * Math.sin(angle + angleOffset) + pA.y
+            };
+            break;
+        } 
         path.push(q);
         // JMI end
 

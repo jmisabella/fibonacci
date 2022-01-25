@@ -4,3 +4,25 @@ canvas {
   height: 600px;
   border: solid 1px #000;
 }
+
+canvas.background-0 {
+  background-color: #fff;
+}
+
+canvas.background-1 {
+  background-color: Green;
+}
+
+canvas.background-2 {
+  background-color: Red;
+}
+
+canvas.background-3 {
+  background-color: Gray;
+}
+
+canvas.background-4 {
+  background-color: yellow;
+}
+
+
