@@ -51,10 +51,10 @@ function consoleLog(message) {
 
 window.addEventListener("load", init, false);
 
-$("#send-button").click(function (e) {
-  console.log("Sending ...");
-  getFibSequence();  
-});
+// $("#send-button").click(function (e) {
+//   console.log("Sending ...");
+//   getFibSequence();  
+// });
 
 // 1. create a json version of the message.
 // 2. send the message to the server.
