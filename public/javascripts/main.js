@@ -74,6 +74,9 @@ var spiralPhase = 2;
 var backgroundPhase = 0;
 var canvas = document.getElementById("can");
 var ctx = canvas.getContext("2d");
+var color = "#000";
+var p1 = 0; 
+var p2 = 0; 
 
 // Assume ctx is canvas 2D Context and ready to render to
 var width = ctx.canvas.width;
@@ -95,8 +98,44 @@ canvas.addEventListener('click', function() {
   $("#can").removeClass("background-4");
   $("#can").addClass("background-" + backgroundPhase);
   ctx.clearRect(0, 0, width, height);
-  ctx.beginPath();    
-  drawStroke(getSpiral(p1, p2, getDistance({x:0,y:0},center)), center);
+  ctx.beginPath();
+  color;
+  switch (backgroundPhase) {
+    case 0:
+      color = "#16067f";
+      break;
+    case 1:
+      color = "#4000ff";
+      break;
+    case 2:
+      color = "#5affde";
+      break;
+    case 3:
+      color = "#FFCB05";
+      break;
+    case 4:
+      color = "#FFCB05";
+      break;
+    case "0":
+      color = "#16067f";
+      break;
+    case "1":
+      color = "#4000ff";
+      break;
+    case "2":
+      color = "#5affde";
+      break;
+    case "3":
+      color = "#FFCB05";
+      break;
+    case "4":
+      color = "#FFCB05";
+      break;
+    default:
+      color = "#000";
+      break;
+  }
+  drawStroke(getSpiral(p1, p2, getDistance({x:0,y:0},center)), center, color);
 });
 
 function random(min = 0, max = Number.MAX_SAFE_INTEGER) {
@@ -144,7 +183,7 @@ var getAngle = function(p1, p2){
 var drawStroke = function(points, offset, strokeColor){
     // Default value
     offset = offset || {x:0,y:0}; // Offset to center on screen
-    strokeColor = strokeColor || "black";
+    // strokeColor = strokeColor || "black";
 
     ctx.strokeStyle = strokeColor;
     ctx.beginPath();
