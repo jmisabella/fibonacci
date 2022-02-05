@@ -88,6 +88,22 @@ var center = {
 };
 
 canvas.addEventListener('click', function() {
+  var mouse = {};
+
+  mouse.x = event.offsetX;
+  mouse.y = event.offsetY;
+  if(mouse.x === undefined){ // if firefox
+    mouse.x = event.clientX;
+    mouse.y = event.clientY;
+  }
+
+  // Substract offset (so it's centered at 0,0)
+  mouse.x -= center.x;
+  mouse.y -= center.y;
+
+  drawFibonacciSpiral({x:0, y:0}, mouse);
+
+
   spiralPhase = (spiralPhase + 1) % 4;
   // ctx.clearRect(0, 0, $("#can").width, $("#can").height);
   backgroundPhase = random(0, 4);
@@ -142,22 +158,29 @@ function random(min = 0, max = Number.MAX_SAFE_INTEGER) {
   return Math.floor(Math.random() * (max - min) + min);
 } 
 
+function spiralCenter() {
+  $("#can").click();
+  // $("#can").mousemove();
+}
+
 canvas.addEventListener('touchmove', function() {
-    var mouse = {};
+  var mouse = {};
 
-    mouse.x = event.offsetX;
-    mouse.y = event.offsetY;
-    if(mouse.x === undefined){ // if firefox
-        mouse.x = event.clientX;
-        mouse.y = event.clientY;
-    }
+  mouse.x = event.offsetX;
+  mouse.y = event.offsetY;
+  if(mouse.x === undefined){ // if firefox
+    mouse.x = event.clientX;
+    mouse.y = event.clientY;
+  }
 
-    // Substract offset (so it's centered at 0,0)
-    mouse.x -= center.x;
-    mouse.y -= center.y;
+  // Substract offset (so it's centered at 0,0)
+  mouse.x -= center.x;
+  mouse.y -= center.y;
 
-    drawFibonacciSpiral({x:0, y:0}, mouse);
+  drawFibonacciSpiral({x:0, y:0}, mouse);
 });
+
+window.setInterval(spiralCenter, 360);
 
 canvas.addEventListener('mousemove', function() {
     var mouse = {};
